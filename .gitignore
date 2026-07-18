@@ -12,3 +12,6 @@ venv/
 # OS Files
 .DS_Store
 Thumbs.db
+
+database/alerts.json
+*.log

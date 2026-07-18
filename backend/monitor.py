@@ -4,6 +4,7 @@ import time
 
 from hashing import generate_hash
 from compare_hash import compare_hash
+from alert_logger import log_alert
 
 
 class FileMonitor(FileSystemEventHandler):
@@ -17,7 +18,11 @@ class FileMonitor(FileSystemEventHandler):
 
         current_hash = generate_hash(event.src_path)
 
-        compare_hash("sample.txt", current_hash)
+        if compare_hash("sample.txt", current_hash):
+            print("✅ File Integrity Verified.")
+        else:
+            print("🚨 ALERT: File Modified!")
+            log_alert("sample.txt")
 
 
 observer = Observer()

@@ -1,18 +1,16 @@
 import json
 
-def compare_hash(file_name, new_hash):
+HASH_FILE = "../database/hash_store.json"
 
-    with open("../database/hash_store.json", "r") as file:
+
+def compare_hash(filename, current_hash):
+
+    with open(HASH_FILE, "r") as file:
         data = json.load(file)
 
-    old_hash = data.get(file_name)
+    stored_hash = data.get(filename)
 
-    if old_hash is None:
-        print("❌ File not found in hash storage.")
-        return
-
-    if old_hash == new_hash:
-        print("✅ File Integrity Verified (No Changes).")
-
+    if stored_hash == current_hash:
+        return True
     else:
-        print("🚨 ALERT: File Modified!")
+        return False
