@@ -1,3 +1,4 @@
+import AlertChart from "./charts/AlertChart";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -44,6 +45,18 @@ function App() {
           <h2>Files Monitored</h2>
           <p>1</p>
         </div>
+      </div>
+      <h2>Alert Statistics</h2>
+
+      <div
+        style={{
+          background: "#1e293b",
+          padding: "20px",
+          borderRadius: "10px",
+          marginBottom: "30px",
+        }}
+      >
+        <AlertChart alerts={alerts} />
       </div>
 
       <h2>Recent Alerts</h2>
