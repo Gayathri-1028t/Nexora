@@ -1,0 +1,19 @@
+import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
+import Dashboard from "../pages/Dashboard";
+
+function DashboardLayout() {
+  return (
+    <div className="layout">
+      <Sidebar />
+
+      <div className="main">
+        <Navbar />
+
+        <Dashboard />
+      </div>
+    </div>
+  );
+}
+
+export default DashboardLayout;

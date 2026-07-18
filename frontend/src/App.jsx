@@ -1,18 +1,30 @@
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import Dashboard from "./pages/Dashboard";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import Login from "./pages/Login";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+
   return (
-    <div className="layout">
-      <Sidebar />
+    <Routes>
+      {/* Default Route */}
+      <Route
+        path="/"
+        element={
+          isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+        }
+      />
 
-      <div className="main">
-        <Navbar />
+      {/* Login Page */}
+      <Route path="/login" element={<Login />} />
 
-        <Dashboard />
-      </div>
-    </div>
+      {/* Protected Dashboard */}
+      <Route
+        path="/dashboard"
+        element={isLoggedIn ? <DashboardLayout /> : <Navigate to="/login" />}
+      />
+    </Routes>
   );
 }
 
