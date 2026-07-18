@@ -5,14 +5,24 @@ function App() {
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/alerts")
-      .then((response) => {
-        setAlerts(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const fetchAlerts = () => {
+      axios
+        .get("http://127.0.0.1:8000/alerts")
+        .then((response) => {
+          setAlerts(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    // Load immediately
+    fetchAlerts();
+
+    // Refresh every 5 seconds
+    const interval = setInterval(fetchAlerts, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
