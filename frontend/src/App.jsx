@@ -67,6 +67,7 @@ function App() {
             <th>Time</th>
             <th>File</th>
             <th>Status</th>
+            <th>Threat</th>
           </tr>
         </thead>
 
@@ -74,8 +75,26 @@ function App() {
           {alerts.map((alert, index) => (
             <tr key={index}>
               <td>{alert.time}</td>
+
               <td>{alert.file}</td>
+
               <td>{alert.status}</td>
+
+              <td>
+                {alert.threat === "High" ? (
+                  <span style={{ color: "red", fontWeight: "bold" }}>
+                    🔴 High
+                  </span>
+                ) : alert.threat === "Medium" ? (
+                  <span style={{ color: "orange", fontWeight: "bold" }}>
+                    🟡 Medium
+                  </span>
+                ) : (
+                  <span style={{ color: "lime", fontWeight: "bold" }}>
+                    🟢 Low
+                  </span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

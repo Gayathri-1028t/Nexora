@@ -18,7 +18,21 @@ def home():
 
 @app.get("/alerts")
 def get_alerts():
+
     with open("../database/alerts.json", "r") as file:
         alerts = json.load(file)
+
+    for alert in alerts:
+
+        filename = alert["file"].lower()
+
+        if "password" in filename:
+            alert["threat"] = "High"
+
+        elif "config" in filename:
+            alert["threat"] = "Medium"
+
+        else:
+            alert["threat"] = "Low"
 
     return alerts
