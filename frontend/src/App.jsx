@@ -4,6 +4,8 @@ import axios from "axios";
 
 function App() {
   const [alerts, setAlerts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
 
   useEffect(() => {
     const fetchAlerts = () => {
@@ -17,18 +19,45 @@ function App() {
         });
     };
 
-    // Load immediately
     fetchAlerts();
 
-    // Refresh every 5 seconds
     const interval = setInterval(fetchAlerts, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
+  const filteredAlerts = alerts.filter((alert) => {
+    const matchSearch = alert.file.toLowerCase().includes(search.toLowerCase());
+
+    const matchThreat = filter === "All" || alert.threat === filter;
+
+    return matchSearch && matchThreat;
+  });
+
+  const lowCount = alerts.filter((a) => a.threat === "Low").length;
+  const mediumCount = alerts.filter((a) => a.threat === "Medium").length;
+  const highCount = alerts.filter((a) => a.threat === "High").length;
+
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(alerts, null, 2)], {
+      type: "application/json",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "alerts.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="container">
       <h1>🛡 Nexora Dashboard</h1>
+
+      {/* Dashboard Cards */}
 
       <div className="cards">
         <div className="card">
@@ -46,6 +75,82 @@ function App() {
           <p>1</p>
         </div>
       </div>
+
+      {/* Threat Summary */}
+
+      <div className="cards">
+        <div className="card">
+          <h2>🟢 Low</h2>
+          <p>{lowCount}</p>
+        </div>
+
+        <div className="card">
+          <h2>🟡 Medium</h2>
+          <p>{mediumCount}</p>
+        </div>
+
+        <div className="card">
+          <h2>🔴 High</h2>
+          <p>{highCount}</p>
+        </div>
+      </div>
+
+      {/* Search + Filter */}
+
+      <div
+        style={{
+          display: "flex",
+          gap: "15px",
+          marginBottom: "25px",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="🔍 Search File..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            padding: "10px",
+            width: "250px",
+            borderRadius: "8px",
+            border: "none",
+          }}
+        />
+
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          style={{
+            padding: "10px",
+            borderRadius: "8px",
+            border: "none",
+          }}
+        >
+          <option>All</option>
+          <option>Low</option>
+          <option>Medium</option>
+          <option>High</option>
+        </select>
+
+        <button
+          onClick={exportJSON}
+          style={{
+            padding: "10px 18px",
+            background: "#00c853",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+        >
+          ⬇ Export JSON
+        </button>
+      </div>
+
+      {/* Chart */}
+
       <h2>Alert Statistics</h2>
 
       <div
@@ -58,6 +163,8 @@ function App() {
       >
         <AlertChart alerts={alerts} />
       </div>
+
+      {/* Table */}
 
       <h2>Recent Alerts</h2>
 
@@ -72,7 +179,7 @@ function App() {
         </thead>
 
         <tbody>
-          {alerts.map((alert, index) => (
+          {filteredAlerts.map((alert, index) => (
             <tr key={index}>
               <td>{alert.time}</td>
 
@@ -82,15 +189,30 @@ function App() {
 
               <td>
                 {alert.threat === "High" ? (
-                  <span style={{ color: "red", fontWeight: "bold" }}>
+                  <span
+                    style={{
+                      color: "red",
+                      fontWeight: "bold",
+                    }}
+                  >
                     🔴 High
                   </span>
                 ) : alert.threat === "Medium" ? (
-                  <span style={{ color: "orange", fontWeight: "bold" }}>
+                  <span
+                    style={{
+                      color: "orange",
+                      fontWeight: "bold",
+                    }}
+                  >
                     🟡 Medium
                   </span>
                 ) : (
-                  <span style={{ color: "lime", fontWeight: "bold" }}>
+                  <span
+                    style={{
+                      color: "lime",
+                      fontWeight: "bold",
+                    }}
+                  >
                     🟢 Low
                   </span>
                 )}
