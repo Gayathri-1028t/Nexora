@@ -16,22 +16,47 @@ function App() {
   }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="container">
       <h1>🛡 Nexora Dashboard</h1>
+
+      <div className="cards">
+        <div className="card">
+          <h2>Total Alerts</h2>
+          <p>{alerts.length}</p>
+        </div>
+
+        <div className="card">
+          <h2>System Status</h2>
+          <p style={{ color: "lime" }}>🟢 Monitoring</p>
+        </div>
+
+        <div className="card">
+          <h2>Files Monitored</h2>
+          <p>1</p>
+        </div>
+      </div>
 
       <h2>Recent Alerts</h2>
 
-      {alerts.length === 0 ? (
-        <p>No alerts found.</p>
-      ) : (
-        <ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>File</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
           {alerts.map((alert, index) => (
-            <li key={index}>
-              <strong>{alert.file}</strong> - {alert.status} ({alert.time})
-            </li>
+            <tr key={index}>
+              <td>{alert.time}</td>
+              <td>{alert.file}</td>
+              <td>{alert.status}</td>
+            </tr>
           ))}
-        </ul>
-      )}
+        </tbody>
+      </table>
     </div>
   );
 }
