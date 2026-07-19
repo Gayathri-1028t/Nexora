@@ -8,13 +8,15 @@ import Alerts from "./pages/Alerts";
 import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
 
   return (
     <Routes>
-      {/* Default */}
+      {/* Default Route */}
       <Route
         path="/"
         element={
@@ -34,6 +36,8 @@ function App() {
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/change-password" element={<ChangePassword />} />
       </Route>
     </Routes>
   );

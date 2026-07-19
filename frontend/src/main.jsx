@@ -8,12 +8,16 @@ import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
 import "./App.css";
 
+import ThemeProvider from "./context/ThemeContext";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
+    <ThemeProvider>
+      <BrowserRouter>
+        <App />
 
-      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
-    </BrowserRouter>
+        <ToastContainer position="top-right" autoClose={3000} theme="dark" />
+      </BrowserRouter>
+    </ThemeProvider>
   </React.StrictMode>,
 );

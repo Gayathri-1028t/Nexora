@@ -220,3 +220,88 @@ footer {
     width: 100%;
   }
 }
+/* ========================= */
+/* Theme Support */
+/* ========================= */
+
+body.dark {
+  background: #0f172a;
+  color: white;
+}
+
+body.light {
+  background: #f8fafc;
+  color: #111827;
+}
+
+/* Main */
+body.light .main {
+  background: #f8fafc;
+}
+
+/* Sidebar */
+body.light .sidebar {
+  background: #e2e8f0;
+  color: #111827;
+}
+
+body.light .sidebar h2 {
+  color: #2563eb;
+}
+
+body.light .sidebar a {
+  color: #111827 !important;
+}
+
+body.light .sidebar a:hover {
+  color: #2563eb !important;
+}
+
+/* Navbar */
+body.light .navbar {
+  background: white;
+  color: #111827;
+}
+
+/* Cards */
+body.light .card {
+  background: white;
+  color: #111827;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Table */
+body.light table {
+  background: white;
+  color: #111827;
+}
+
+body.light th {
+  background: #2563eb;
+  color: white;
+}
+
+body.light td {
+  border-bottom: 1px solid #cbd5e1;
+}
+
+body.light tr:nth-child(even) {
+  background: #f1f5f9;
+}
+
+body.light tr:hover {
+  background: #e2e8f0;
+}
+
+/* Inputs */
+body.light input,
+body.light select {
+  background: white;
+  color: #111827;
+  border: 1px solid #cbd5e1;
+}
+
+/* Footer */
+body.light footer {
+  color: #475569;
+}
