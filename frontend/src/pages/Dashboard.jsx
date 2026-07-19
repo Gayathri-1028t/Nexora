@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import AlertChart from "../charts/AlertChart";
 import ReportGenerator from "../components/ReportGenerator";
 import ActivityTimeline from "../components/ActivityTimeline";
+import { connectWebSocket, closeWebSocket } from "../services/websocket";
 
 function Dashboard() {
   const [alerts, setAlerts] = useState([]);
@@ -12,6 +13,7 @@ function Dashboard() {
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+
   const [lastUpdated, setLastUpdated] = useState("");
 
   useEffect(() => {
@@ -19,29 +21,40 @@ function Dashboard() {
       axios
         .get("http://127.0.0.1:8000/alerts")
         .then((response) => {
-          const newAlerts = response.data;
-
-          if (previousCount !== 0 && newAlerts.length > previousCount) {
-            toast.success("🚨 New Security Alert Detected!");
-          }
-
-          setAlerts(newAlerts);
-          setPreviousCount(newAlerts.length);
-
+          setAlerts(response.data);
+          setPreviousCount(response.data.length);
           setLastUpdated(new Date().toLocaleTimeString());
         })
-        .catch((error) => console.log(error));
+        .catch((err) => console.log(err));
     };
 
+    // Initial Fetch
     fetchAlerts();
 
-    const interval = setInterval(fetchAlerts, 5000);
+    // WebSocket
+    connectWebSocket((newAlert) => {
+      toast.success("🚨 New Security Alert Detected!");
 
-    return () => clearInterval(interval);
-  }, [previousCount]);
+      setAlerts((prev) => [newAlert, ...prev]);
+
+      setPreviousCount((prev) => prev + 1);
+
+      setLastUpdated(new Date().toLocaleTimeString());
+    });
+
+    // Backup Polling
+    const interval = setInterval(fetchAlerts, 30000);
+
+    return () => {
+      clearInterval(interval);
+      closeWebSocket();
+    };
+  }, []);
 
   const lowCount = alerts.filter((a) => a.threat === "Low").length;
+
   const mediumCount = alerts.filter((a) => a.threat === "Medium").length;
+
   const highCount = alerts.filter((a) => a.threat === "High").length;
 
   const riskScore =
@@ -69,17 +82,23 @@ function Dashboard() {
       type: "application/json",
     });
 
-    const url = URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob);
 
     const a = document.createElement("a");
+
     a.href = url;
+
     a.download = "alerts.json";
+
     a.click();
+
+    window.URL.revokeObjectURL(url);
   };
 
   return (
     <div className="container">
       <h1>🛡 Nexora Dashboard</h1>
+
       <p
         style={{
           color: "#94a3b8",
@@ -100,11 +119,20 @@ function Dashboard() {
 
         <div className="card">
           <h2>System Status</h2>
-          <p style={{ color: "lime" }}>🟢 Monitoring</p>
+
+          <p
+            style={{
+              color: "#22c55e",
+              fontWeight: "bold",
+            }}
+          >
+            🟢 Monitoring
+          </p>
         </div>
 
         <div className="card">
           <h2>Files Monitored</h2>
+
           <p>1</p>
         </div>
       </div>
@@ -113,33 +141,38 @@ function Dashboard() {
 
       <div className="cards">
         <div className="card">
-          <h2 style={{ color: "#4ade80" }}>🟢 Low</h2>
+          <h2 style={{ color: "#22c55e" }}>🟢 Low</h2>
+
           <p>{lowCount}</p>
         </div>
 
         <div className="card">
           <h2 style={{ color: "#facc15" }}>🟡 Medium</h2>
+
           <p>{mediumCount}</p>
         </div>
 
         <div className="card">
           <h2 style={{ color: "#ef4444" }}>🔴 High</h2>
+
           <p>{highCount}</p>
         </div>
 
         <div className="card">
           <h2 style={{ color: "#38bdf8" }}>⚡ Risk Score</h2>
+
           <p>{riskScore}%</p>
         </div>
       </div>
 
-      {/* Search & Filter */}
+      {/* Search + Filter */}
 
       <div
         style={{
           display: "flex",
           gap: "20px",
-          marginBottom: "30px",
+          marginBottom: "25px",
+          flexWrap: "wrap",
         }}
       >
         <input
@@ -149,10 +182,20 @@ function Dashboard() {
           onChange={(e) => setSearch(e.target.value)}
           style={{
             flex: 1,
+            minWidth: "250px",
+            padding: "12px",
+            borderRadius: "8px",
           }}
         />
 
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          style={{
+            padding: "12px",
+            borderRadius: "8px",
+          }}
+        >
           <option>All</option>
           <option>Low</option>
           <option>Medium</option>
@@ -162,7 +205,8 @@ function Dashboard() {
         <button onClick={exportJSON}>⬇ Export JSON</button>
       </div>
 
-      {/* Chart */}
+      {/* Report */}
+
       <div
         style={{
           display: "flex",
@@ -170,8 +214,10 @@ function Dashboard() {
           marginBottom: "20px",
         }}
       >
-        <ReportGenerator alerts={alerts} />
+        <ReportGenerator alerts={filteredAlerts} />
       </div>
+
+      {/* Alert Chart */}
 
       <h2>📊 Alert Statistics</h2>
 
@@ -183,9 +229,8 @@ function Dashboard() {
           marginBottom: "30px",
         }}
       >
-        <AlertChart alerts={alerts} />
+        <AlertChart alerts={filteredAlerts} />
       </div>
-
       {/* Recent Alerts */}
 
       <h2>🚨 Recent Alerts</h2>
@@ -201,53 +246,67 @@ function Dashboard() {
         </thead>
 
         <tbody>
-          {filteredAlerts.map((alert, index) => (
-            <tr key={index}>
-              <td>{alert.time}</td>
-
-              <td>{alert.file}</td>
-
-              <td>{alert.status}</td>
-
-              <td>
-                {alert.threat === "High" ? (
-                  <span
-                    style={{
-                      color: "red",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    🔴 High
-                  </span>
-                ) : alert.threat === "Medium" ? (
-                  <span
-                    style={{
-                      color: "orange",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    🟡 Medium
-                  </span>
-                ) : (
-                  <span
-                    style={{
-                      color: "lime",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    🟢 Low
-                  </span>
-                )}
+          {filteredAlerts.length === 0 ? (
+            <tr>
+              <td
+                colSpan="4"
+                style={{
+                  textAlign: "center",
+                  padding: "20px",
+                  color: "#94a3b8",
+                }}
+              >
+                No Alerts Found
               </td>
             </tr>
-          ))}
+          ) : (
+            filteredAlerts.map((alert, index) => (
+              <tr key={alert.id || index}>
+                <td>{alert.time}</td>
+
+                <td>{alert.file}</td>
+
+                <td>{alert.status}</td>
+
+                <td>
+                  {alert.threat === "High" ? (
+                    <span
+                      style={{
+                        color: "#ef4444",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      🔴 High
+                    </span>
+                  ) : alert.threat === "Medium" ? (
+                    <span
+                      style={{
+                        color: "#facc15",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      🟡 Medium
+                    </span>
+                  ) : (
+                    <span
+                      style={{
+                        color: "#22c55e",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      🟢 Low
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
       {/* Activity Timeline */}
 
       <ActivityTimeline alerts={alerts} />
-
       {/* Footer */}
 
       <footer
@@ -255,12 +314,39 @@ function Dashboard() {
           marginTop: "40px",
           textAlign: "center",
           color: "#94a3b8",
-          paddingBottom: "20px",
+          padding: "25px",
+          borderTop: "1px solid #334155",
         }}
       >
-        © 2026 Nexora AI
-        <br />
-        AI Powered File Integrity Monitoring System
+        <h3
+          style={{
+            marginBottom: "10px",
+          }}
+        >
+          🛡 Nexora AI Security Platform
+        </h3>
+
+        <p>AI Powered File Integrity Monitoring System</p>
+
+        <p
+          style={{
+            marginTop: "10px",
+            fontSize: "13px",
+          }}
+        >
+          🔄 Live Monitoring Enabled | 📡 FastAPI Connected | 🗄 SQLite Database
+          | ⚡ WebSocket Enabled
+        </p>
+
+        <p
+          style={{
+            marginTop: "15px",
+            fontSize: "12px",
+            color: "#64748b",
+          }}
+        >
+          © 2026 Nexora AI. All Rights Reserved.
+        </p>
       </footer>
     </div>
   );
