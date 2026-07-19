@@ -4,11 +4,14 @@ import axios from "axios";
 import ThreatTrendChart from "../charts/ThreatTrendChart";
 import ThreatPieChart from "../charts/ThreatPieChart";
 import ThreatBarChart from "../charts/ThreatBarChart";
+import ExportCSV from "../components/ExportCSV";
 
 function Analytics() {
   const [alerts, setAlerts] = useState([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   useEffect(() => {
     const fetchAlerts = () => {
@@ -25,18 +28,25 @@ function Analytics() {
     return () => clearInterval(interval);
   }, []);
 
-  // Search + Threat Filter
+  // Search + Threat + Date Filter
   const filteredAlerts = useMemo(() => {
     return alerts.filter((alert) => {
       const matchSearch = alert.file
         .toLowerCase()
         .includes(search.toLowerCase());
 
-      const matchFilter = filter === "All" ? true : alert.threat === filter;
+      const matchFilter = filter === "All" || alert.threat === filter;
 
-      return matchSearch && matchFilter;
+      // Adjust this if backend sends a different date format
+      const alertDate = alert.time ? alert.time.slice(0, 10) : "";
+
+      const matchFrom = !fromDate || alertDate >= fromDate;
+
+      const matchTo = !toDate || alertDate <= toDate;
+
+      return matchSearch && matchFilter && matchFrom && matchTo;
     });
-  }, [alerts, search, filter]);
+  }, [alerts, search, filter, fromDate, toDate]);
 
   const high = filteredAlerts.filter((a) => a.threat === "High").length;
 
@@ -71,7 +81,7 @@ function Analytics() {
       {/* Threat Filter */}
       <div
         style={{
-          marginBottom: "25px",
+          marginBottom: "20px",
         }}
       >
         <select
@@ -88,6 +98,53 @@ function Analytics() {
           <option value="Medium">🟡 Medium</option>
           <option value="Low">🟢 Low</option>
         </select>
+      </div>
+
+      {/* Date Filter */}
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          flexWrap: "wrap",
+          marginBottom: "20px",
+        }}
+      >
+        <div>
+          <label>📅 From Date</label>
+          <br />
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+            }}
+          />
+        </div>
+
+        <div>
+          <label>📅 To Date</label>
+          <br />
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Export CSV */}
+      <div
+        style={{
+          marginBottom: "25px",
+        }}
+      >
+        <ExportCSV alerts={filteredAlerts} />
       </div>
 
       {/* Summary Cards */}
@@ -151,7 +208,7 @@ function Analytics() {
 
         <p>📡 Connected to FastAPI Backend</p>
 
-        <p>🔍 Search and Threat Filter Enabled</p>
+        <p>🔍 Search, Threat Filter & Date Filter Enabled</p>
       </div>
     </div>
   );
