@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 import AlertChart from "../charts/AlertChart";
+import ReportGenerator from "../components/ReportGenerator";
 import ActivityTimeline from "../components/ActivityTimeline";
 
 function Dashboard() {
@@ -162,6 +163,15 @@ function Dashboard() {
       </div>
 
       {/* Chart */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: "20px",
+        }}
+      >
+        <ReportGenerator alerts={alerts} />
+      </div>
 
       <h2>📊 Alert Statistics</h2>
 
