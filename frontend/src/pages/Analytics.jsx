@@ -1,56 +1,69 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import ThreatTrendChart from "../charts/ThreatTrendChart";
 
 function Analytics() {
+  const [alerts, setAlerts] = useState([]);
+
+  useEffect(() => {
+    const fetchAlerts = () => {
+      axios
+        .get("http://127.0.0.1:8000/alerts")
+        .then((res) => setAlerts(res.data))
+        .catch((err) => console.log(err));
+    };
+
+    fetchAlerts();
+
+    const interval = setInterval(fetchAlerts, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const high = alerts.filter((a) => a.threat === "High").length;
+  const medium = alerts.filter((a) => a.threat === "Medium").length;
+  const low = alerts.filter((a) => a.threat === "Low").length;
+
   return (
     <div className="container">
       <h1>📊 Security Analytics</h1>
 
-      {/* Summary Cards */}
       <div className="cards">
         <div className="card">
-          <h2>Total Threats</h2>
-          <p>35</p>
+          <h2>Total Alerts</h2>
+          <p>{alerts.length}</p>
         </div>
 
         <div className="card">
           <h2>High Threats</h2>
-          <p style={{ color: "#ef4444" }}>8</p>
+          <p style={{ color: "#ef4444" }}>{high}</p>
         </div>
 
         <div className="card">
           <h2>Medium Threats</h2>
-          <p style={{ color: "#facc15" }}>12</p>
+          <p style={{ color: "#facc15" }}>{medium}</p>
         </div>
 
         <div className="card">
           <h2>Low Threats</h2>
-          <p style={{ color: "#22c55e" }}>15</p>
+          <p style={{ color: "#22c55e" }}>{low}</p>
         </div>
       </div>
 
-      {/* Weekly Chart */}
-      <ThreatTrendChart alerts={[]} />
+      <ThreatTrendChart alerts={alerts} />
 
-      {/* Analytics Insights */}
       <div
         className="card"
         style={{
           marginTop: "30px",
         }}
       >
-        <h2>📈 Analytics Insights</h2>
+        <h2>📈 Live Analytics</h2>
 
-        <ul
-          style={{
-            lineHeight: "2",
-            marginTop: "15px",
-          }}
-        >
-          <li>✅ Threat activity increased by 18% this week.</li>
-          <li>✅ High-risk files were detected on Thursday.</li>
-          <li>✅ Most alerts were classified as Low Threat.</li>
-          <li>✅ System monitoring remained active 24/7.</li>
-        </ul>
+        <p>
+          Analytics are updated automatically every 5 seconds from the FastAPI
+          backend.
+        </p>
       </div>
     </div>
   );

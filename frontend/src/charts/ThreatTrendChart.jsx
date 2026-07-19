@@ -9,12 +9,15 @@ import {
 } from "recharts";
 
 function ThreatTrendChart({ alerts }) {
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const high = alerts.filter((a) => a.threat === "High").length;
+  const medium = alerts.filter((a) => a.threat === "Medium").length;
+  const low = alerts.filter((a) => a.threat === "Low").length;
 
-  const data = days.map((day) => ({
-    day,
-    alerts: Math.floor(Math.random() * (alerts.length + 2)),
-  }));
+  const data = [
+    { threat: "Low", count: low },
+    { threat: "Medium", count: medium },
+    { threat: "High", count: high },
+  ];
 
   return (
     <div
@@ -25,18 +28,18 @@ function ThreatTrendChart({ alerts }) {
         marginTop: "20px",
       }}
     >
-      <h2>📈 Weekly Threat Trend</h2>
+      <h2>📈 Live Threat Statistics</h2>
 
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="day" />
+          <XAxis dataKey="threat" />
           <YAxis />
           <Tooltip />
 
           <Line
             type="monotone"
-            dataKey="alerts"
+            dataKey="count"
             stroke="#38bdf8"
             strokeWidth={3}
           />
