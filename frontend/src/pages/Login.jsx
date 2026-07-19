@@ -1,23 +1,46 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log("Username:", username);
-    console.log("Password:", password);
+  const handleLogin = async () => {
+    if (!username || !password) {
+      alert("Please enter Username and Password");
+      return;
+    }
 
-    if (username.trim() === "admin" && password.trim() === "admin123") {
+    setLoading(true);
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/login", {
+        username,
+        password,
+      });
+
       localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("token", response.data.access_token);
+      localStorage.setItem("username", response.data.username);
+      localStorage.setItem("role", response.data.role);
+      localStorage.setItem("full_name", response.data.full_name);
+
+      alert("Login Successful ✅");
+
       navigate("/dashboard");
-    } else {
-      alert("Invalid Username or Password");
+    } catch (error) {
+      console.log(error);
+
+      alert("Invalid Username or Password ❌");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div
       style={{
@@ -73,13 +96,15 @@ function Login() {
 
         <button
           onClick={handleLogin}
+          disabled={loading}
           style={{
             width: "100%",
             padding: "14px",
             fontSize: "16px",
+            cursor: "pointer",
           }}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <p
