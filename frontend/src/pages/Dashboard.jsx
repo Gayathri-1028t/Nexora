@@ -1,18 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+
 import AlertChart from "../charts/AlertChart";
+import ActivityTimeline from "../components/ActivityTimeline";
 
 function Dashboard() {
   const [alerts, setAlerts] = useState([]);
+  const [previousCount, setPreviousCount] = useState(0);
+
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [lastUpdated, setLastUpdated] = useState("");
 
   useEffect(() => {
     const fetchAlerts = () => {
       axios
         .get("http://127.0.0.1:8000/alerts")
         .then((response) => {
-          setAlerts(response.data);
+          const newAlerts = response.data;
+
+          if (previousCount !== 0 && newAlerts.length > previousCount) {
+            toast.success("🚨 New Security Alert Detected!");
+          }
+
+          setAlerts(newAlerts);
+          setPreviousCount(newAlerts.length);
+
+          setLastUpdated(new Date().toLocaleTimeString());
         })
         .catch((error) => console.log(error));
     };
@@ -22,11 +37,19 @@ function Dashboard() {
     const interval = setInterval(fetchAlerts, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [previousCount]);
 
   const lowCount = alerts.filter((a) => a.threat === "Low").length;
   const mediumCount = alerts.filter((a) => a.threat === "Medium").length;
   const highCount = alerts.filter((a) => a.threat === "High").length;
+
+  const riskScore =
+    alerts.length === 0
+      ? 0
+      : Math.round(
+          ((highCount * 3 + mediumCount * 2 + lowCount) / (alerts.length * 3)) *
+            100,
+        );
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter((alert) => {
@@ -48,16 +71,25 @@ function Dashboard() {
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
-
     a.href = url;
     a.download = "alerts.json";
-
     a.click();
   };
 
   return (
     <div className="container">
       <h1>🛡 Nexora Dashboard</h1>
+      <p
+        style={{
+          color: "#94a3b8",
+          marginBottom: "20px",
+          fontSize: "14px",
+        }}
+      >
+        🕒 Last Updated : {lastUpdated}
+      </p>
+
+      {/* Main Cards */}
 
       <div className="cards">
         <div className="card">
@@ -76,6 +108,8 @@ function Dashboard() {
         </div>
       </div>
 
+      {/* Threat Cards */}
+
       <div className="cards">
         <div className="card">
           <h2 style={{ color: "#4ade80" }}>🟢 Low</h2>
@@ -91,7 +125,14 @@ function Dashboard() {
           <h2 style={{ color: "#ef4444" }}>🔴 High</h2>
           <p>{highCount}</p>
         </div>
+
+        <div className="card">
+          <h2 style={{ color: "#38bdf8" }}>⚡ Risk Score</h2>
+          <p>{riskScore}%</p>
+        </div>
       </div>
+
+      {/* Search & Filter */}
 
       <div
         style={{
@@ -107,42 +148,22 @@ function Dashboard() {
           onChange={(e) => setSearch(e.target.value)}
           style={{
             flex: 1,
-            padding: "12px",
-            borderRadius: "8px",
-            border: "none",
           }}
         />
 
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          style={{
-            padding: "12px",
-            borderRadius: "8px",
-          }}
-        >
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option>All</option>
           <option>Low</option>
           <option>Medium</option>
           <option>High</option>
         </select>
 
-        <button
-          onClick={exportJSON}
-          style={{
-            background: "#22c55e",
-            color: "white",
-            border: "none",
-            padding: "12px 20px",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          ⬇ Export JSON
-        </button>
+        <button onClick={exportJSON}>⬇ Export JSON</button>
       </div>
 
-      <h2>Alert Statistics</h2>
+      {/* Chart */}
+
+      <h2>📊 Alert Statistics</h2>
 
       <div
         style={{
@@ -155,17 +176,16 @@ function Dashboard() {
         <AlertChart alerts={alerts} />
       </div>
 
-      <h2>Recent Alerts</h2>
+      {/* Recent Alerts */}
+
+      <h2>🚨 Recent Alerts</h2>
 
       <table>
         <thead>
           <tr>
             <th>Time</th>
-
             <th>File</th>
-
             <th>Status</th>
-
             <th>Threat</th>
           </tr>
         </thead>
@@ -181,15 +201,30 @@ function Dashboard() {
 
               <td>
                 {alert.threat === "High" ? (
-                  <span style={{ color: "red", fontWeight: "bold" }}>
+                  <span
+                    style={{
+                      color: "red",
+                      fontWeight: "bold",
+                    }}
+                  >
                     🔴 High
                   </span>
                 ) : alert.threat === "Medium" ? (
-                  <span style={{ color: "orange", fontWeight: "bold" }}>
+                  <span
+                    style={{
+                      color: "orange",
+                      fontWeight: "bold",
+                    }}
+                  >
                     🟡 Medium
                   </span>
                 ) : (
-                  <span style={{ color: "lime", fontWeight: "bold" }}>
+                  <span
+                    style={{
+                      color: "lime",
+                      fontWeight: "bold",
+                    }}
+                  >
                     🟢 Low
                   </span>
                 )}
@@ -198,6 +233,12 @@ function Dashboard() {
           ))}
         </tbody>
       </table>
+
+      {/* Activity Timeline */}
+
+      <ActivityTimeline alerts={alerts} />
+
+      {/* Footer */}
 
       <footer
         style={{

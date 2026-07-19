@@ -8,14 +8,16 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    if (username === "admin" && password === "admin123") {
+    console.log("Username:", username);
+    console.log("Password:", password);
+
+    if (username.trim() === "admin" && password.trim() === "admin123") {
       localStorage.setItem("isLoggedIn", "true");
       navigate("/dashboard");
     } else {
       alert("Invalid Username or Password");
     }
   };
-
   return (
     <div
       style={{
