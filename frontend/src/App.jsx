@@ -11,6 +11,11 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
 
+// Cyber Navigation Upgrades
+import AIDetection from "./pages/AIDetection";
+import FileScanner from "./pages/FileScanner";
+import LiveMonitoring from "./pages/LiveMonitoring";
+
 function App() {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
 
@@ -38,6 +43,11 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/change-password" element={<ChangePassword />} />
+        
+        {/* Expanded Navigation Routes */}
+        <Route path="/ai-detection" element={<AIDetection />} />
+        <Route path="/file-scanner" element={<FileScanner />} />
+        <Route path="/live-monitoring" element={<LiveMonitoring />} />
       </Route>
     </Routes>
   );

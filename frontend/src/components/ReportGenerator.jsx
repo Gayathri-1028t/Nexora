@@ -1,4 +1,6 @@
 import jsPDF from "jspdf";
+import Button from "./ui/Button";
+import { FileText, Printer } from "lucide-react";
 
 function ReportGenerator({ alerts }) {
   const generatePDF = () => {
@@ -12,10 +14,10 @@ function ReportGenerator({ alerts }) {
     // Header
     doc.setFont("helvetica", "bold");
     doc.setFontSize(22);
-    doc.setTextColor(0, 102, 204);
+    doc.setTextColor(0, 229, 255); // Nexora Cyan
     doc.text("Nexora Security Report", 20, 20);
 
-    doc.setDrawColor(0, 102, 204);
+    doc.setDrawColor(0, 229, 255);
     doc.line(20, 25, 190, 25);
 
     // Report Info
@@ -24,7 +26,6 @@ function ReportGenerator({ alerts }) {
     doc.setTextColor(0, 0, 0);
 
     doc.text(`Generated On : ${new Date().toLocaleString()}`, 20, 40);
-
     doc.text("System Status : Monitoring", 20, 50);
 
     // Summary Box
@@ -87,40 +88,25 @@ function ReportGenerator({ alerts }) {
     <div
       style={{
         display: "flex",
-        gap: "12px",
+        gap: "1rem",
         justifyContent: "flex-end",
-        marginBottom: "20px",
       }}
     >
-      <button
+      <Button
+        variant="primary"
         onClick={generatePDF}
-        style={{
-          background: "#2563eb",
-          color: "white",
-          padding: "12px 20px",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-          fontWeight: "bold",
-        }}
+        icon={FileText}
       >
-        📄 Download PDF
-      </button>
+        Download PDF
+      </Button>
 
-      <button
+      <Button
+        variant="secondary"
         onClick={() => window.print()}
-        style={{
-          background: "#16a34a",
-          color: "white",
-          padding: "12px 20px",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-          fontWeight: "bold",
-        }}
+        icon={Printer}
       >
-        🖨 Print Report
-      </button>
+        Print Report
+      </Button>
     </div>
   );
 }
