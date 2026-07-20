@@ -18,6 +18,7 @@ import ReportGenerator from "../components/ReportGenerator";
 import { connectWebSocket, closeWebSocket } from "../services/websocket";
 
 import CyberAttackMap from "../components/ui/CyberAttackMap";
+import ThreatMap from "../components/ui/ThreatMap";
 import NetworkActivityChart from "../components/ui/NetworkActivityChart";
 import AICopilotPanel from "../components/ui/AICopilotPanel";
 
@@ -115,6 +116,11 @@ function Dashboard() {
     <div style={{ position: "relative", zIndex: 1 }} className="container animate-fade-in">
       {/* Premium Dashboard Greeting & Gauge Hero */}
       <DashboardHero alertsCount={highCount} />
+
+      {/* Main SOC Interactive Threat Map */}
+      <div style={{ marginBottom: "2.5rem" }}>
+        <ThreatMap />
+      </div>
 
       {/* Core Integrity Statistics Cards */}
       <div
