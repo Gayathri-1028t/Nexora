@@ -14,10 +14,16 @@ import {
   Terminal,
 } from "lucide-react";
 
-import AlertChart from "../charts/AlertChart";
 import ReportGenerator from "../components/ReportGenerator";
-import ActivityTimeline from "../components/ActivityTimeline";
 import { connectWebSocket, closeWebSocket } from "../services/websocket";
+
+import CyberAttackMap from "../components/ui/CyberAttackMap";
+import NetworkActivityChart from "../components/ui/NetworkActivityChart";
+import AICopilotPanel from "../components/ui/AICopilotPanel";
+
+import SystemHealthProgress from "../components/ui/SystemHealthProgress";
+import LiveThreatTimeline from "../components/ui/LiveThreatTimeline";
+import RecentActivityFeed from "../components/ui/RecentActivityFeed";
 
 import DashboardHero from "../components/ui/DashboardHero";
 import StatCard from "../components/StatCard";
@@ -256,28 +262,44 @@ function Dashboard() {
         </div>
       </Card>
 
-      {/* Grid for Chart and Recent Alerts list */}
+      {/* Middle Section: Cyber Attack Map and AI Copilot */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          display: "flex",
+          flexWrap: "wrap",
           gap: "2rem",
-          alignItems: "start",
+          marginBottom: "2rem",
+          alignItems: "stretch",
         }}
       >
-        {/* Recharts Wrapper */}
-        <ChartCard
-          title="Threat Metrics Distribution"
-          subtitle="Real-time alert category analytics"
-          glow="primary"
-        >
-          <div style={{ padding: "0.5rem 0" }}>
-            <AlertChart alerts={filteredAlerts} />
-          </div>
-        </ChartCard>
+        <CyberAttackMap />
+        <AICopilotPanel />
+      </div>
 
-        {/* Activity Logs Stream */}
-        <ActivityTimeline alerts={alerts} />
+      {/* Network Activity Chart */}
+      <div
+        style={{
+          marginBottom: "2rem",
+        }}
+      >
+        <NetworkActivityChart />
+      </div>
+
+      {/* Lower Section: System Health Progress Cards */}
+      <SystemHealthProgress />
+
+      {/* Timeline & Activity Feed Side-by-Side */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "2rem",
+          marginBottom: "2rem",
+          alignItems: "stretch",
+        }}
+      >
+        <LiveThreatTimeline alerts={alerts} />
+        <RecentActivityFeed />
       </div>
 
       {/* Database Integrity Alert Table */}
