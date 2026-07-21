@@ -8,23 +8,43 @@ function DashboardLayout() {
   const [isCollapsed, setIsCollapsed] = useState(
     localStorage.getItem("sidebarCollapsed") === "true"
   );
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const toggleSidebar = () => {
-    setIsCollapsed((prev) => {
-      localStorage.setItem("sidebarCollapsed", !prev);
-      return !prev;
-    });
+    if (isMobile) {
+      setIsDrawerOpen((prev) => !prev);
+    } else {
+      setIsCollapsed((prev) => {
+        localStorage.setItem("sidebarCollapsed", !prev);
+        return !prev;
+      });
+    }
   };
 
-  // Close sidebar on smaller screens initially
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) {
+      const width = window.innerWidth;
+      const mobileStatus = width < 768;
+      setIsMobile(mobileStatus);
+
+      if (width < 1024) {
         setIsCollapsed(true);
+      } else {
+        // Restore user preference on desktop
+        setIsCollapsed(localStorage.getItem("sidebarCollapsed") === "true");
+      }
+
+      // Close drawer when screen goes above mobile width
+      if (!mobileStatus) {
+        setIsDrawerOpen(false);
       }
     };
-    handleResize();
+
     window.addEventListener("resize", handleResize);
+    // Initial check
+    handleResize();
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -48,8 +68,29 @@ function DashboardLayout() {
         <div className="light-bulb-2" />
       </div>
 
-      {/* Collapsible Sidebar */}
-      <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
+      {/* Backdrop for mobile drawer */}
+      {isMobile && isDrawerOpen && (
+        <div
+          onClick={() => setIsDrawerOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(8px)",
+            zIndex: 98,
+            transition: "opacity 0.3s ease",
+          }}
+        />
+      )}
+
+      {/* Collapsible Sidebar / Mobile Drawer */}
+      <Sidebar 
+        isCollapsed={isCollapsed} 
+        toggleSidebar={toggleSidebar} 
+        isMobile={isMobile}
+        isDrawerOpen={isDrawerOpen}
+        closeDrawer={() => setIsDrawerOpen(false)}
+      />
 
       {/* Main Panel Content Container */}
       <div
@@ -64,12 +105,12 @@ function DashboardLayout() {
           zIndex: 1,
         }}
       >
-        <Navbar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
+        <Navbar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} isMobile={isMobile} isDrawerOpen={isDrawerOpen} />
 
         <main
           style={{
             flex: 1,
-            padding: "2rem",
+            padding: isMobile ? "1rem" : "2rem",
             position: "relative",
             overflowY: "auto",
           }}

@@ -3,10 +3,12 @@ import { Cpu, ShieldCheck, Sparkles, Activity, RefreshCw } from "lucide-react";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
+import PageTransition from "../components/ui/PageTransition";
 
 function AIDetection() {
   return (
-    <div style={{ padding: "2.5rem", position: "relative", zIndex: 1 }} className="container animate-fade-in">
+    <PageTransition>
+      <div style={{ padding: "2.5rem", position: "relative", zIndex: 1 }} className="container">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <div>
           <h1 style={{ fontSize: "1.8rem", color: "#F8FAFC", marginBottom: "0.25rem" }}>
@@ -111,7 +113,8 @@ function AIDetection() {
           ))}
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 }
 

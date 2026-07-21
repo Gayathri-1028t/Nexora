@@ -3,6 +3,8 @@ import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
 import { Globe, Shield, Terminal, Activity, Brain, RefreshCw } from "lucide-react";
+import AnimatedCounter from "./AnimatedCounter";
+import { MapSkeleton } from "./Skeletons";
 import "leaflet/dist/leaflet.css";
 
 // 21 Active Enterprise SOC Threat Locations
@@ -394,21 +396,21 @@ const LeftStatsPanel = ({ topTargeted, totalCountries, stats, nested }) => {
           <div style={panelItemStyle}>
             <span style={panelLabelStyle}>ACTIVE HOST COUNTRIES</span>
             <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#F8FAFC", fontFamily: "monospace" }}>
-              {totalCountries}
+              <AnimatedCounter value={totalCountries} />
             </span>
           </div>
 
           <div style={panelItemStyle}>
             <span style={panelLabelStyle}>BLOCKED ATTACKS TODAY</span>
             <span style={{ fontSize: "0.85rem", fontWeight: "800", color: "#22C55E", fontFamily: "monospace", textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
-              {stats.blockedAttacks.toLocaleString()}
+              <AnimatedCounter value={stats.blockedAttacks} />
             </span>
           </div>
 
           <div style={panelItemStyle}>
             <span style={panelLabelStyle}>AI DETECTION ACCURACY</span>
             <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#00E5FF", fontFamily: "monospace" }}>
-              {stats.accuracy}%
+              <AnimatedCounter value={stats.accuracy} type="float" />%
             </span>
           </div>
         </div>
@@ -470,21 +472,21 @@ const RightSocPanel = ({ stats, criticalCount, nested }) => {
           <div style={panelItemStyle}>
             <span style={panelLabelStyle}>COUNTRIES MONITORED</span>
             <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#F8FAFC", fontFamily: "monospace" }}>
-              21 Nodes
+              <AnimatedCounter value={21} /> Nodes
             </span>
           </div>
 
           <div style={panelItemStyle}>
             <span style={panelLabelStyle}>TOTAL THREATS LOGGED</span>
             <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#FACC15", fontFamily: "monospace" }}>
-              {stats.threatsToday}
+              <AnimatedCounter value={stats.threatsToday} />
             </span>
           </div>
 
           <div style={panelItemStyle}>
             <span style={panelLabelStyle}>CRITICAL SEVERITY STRIKES</span>
             <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#FF4D6D", fontFamily: "monospace" }}>
-              {criticalCount} Active
+              <AnimatedCounter value={criticalCount} /> Active
             </span>
           </div>
 
@@ -737,47 +739,7 @@ export default function ThreatMap() {
     >
       <AnimatePresence mode="wait">
         {loading ? (
-          // Cyber Scanner Loading State
-          <motion.div
-            key="loading"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="cyber-grid-scan"
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "1.5rem",
-              background: "#02040b",
-              zIndex: 1000,
-              padding: "2rem"
-            }}
-          >
-            <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{
-                width: "80px",
-                height: "80px",
-                borderRadius: "50%",
-                border: "2px solid rgba(0, 229, 255, 0.1)",
-                borderTop: "2px solid #00E5FF",
-                animation: "spin 1.5s linear infinite"
-              }} />
-              <Globe size={32} style={{ position: "absolute", color: "#00E5FF", animation: "pulse 2s infinite" }} />
-            </div>
-
-            <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <h4 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "1.1rem", color: "#F8FAFC", letterSpacing: "0.08em" }}>
-                INITIALIZING ENTERPRISE SOC
-              </h4>
-              <p style={{ fontFamily: "monospace", fontSize: "0.75rem", color: "#00E5FF", textShadow: "0 0 8px rgba(0,229,255,0.4)" }}>
-                {loadingText}
-              </p>
-            </div>
-          </motion.div>
+          <MapSkeleton key="loading" />
         ) : (
           // Main Enterprise SOC Interface
           <motion.div

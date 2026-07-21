@@ -53,10 +53,10 @@ function Card({
 
   const hoverAnimation = hoverLift
     ? {
-        y: -5,
+        y: -6,
         borderColor: getHoverBorder(),
-        boxShadow: `0 12px 40px 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 25px ${
-          glow === "primary" ? "rgba(0, 229, 255, 0.15)" : glow === "secondary" ? "rgba(124, 58, 237, 0.15)" : getGlowShadow()
+        boxShadow: `0 20px 45px -10px rgba(0, 0, 0, 0.75), inset 0 0 0 1.5px ${getHoverBorder()}, 0 0 30px ${
+          glow === "primary" ? "rgba(0, 229, 255, 0.22)" : glow === "secondary" ? "rgba(124, 58, 237, 0.22)" : glow === "success" ? "rgba(34, 197, 94, 0.22)" : glow === "danger" ? "rgba(255, 77, 109, 0.22)" : "rgba(255, 255, 255, 0.08)"
         }`,
       }
     : {};

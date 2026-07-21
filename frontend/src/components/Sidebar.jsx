@@ -14,7 +14,7 @@ import {
   Shield,
 } from "lucide-react";
 
-function Sidebar({ isCollapsed, toggleSidebar }) {
+function Sidebar({ isCollapsed, toggleSidebar, isMobile = false, isDrawerOpen = false, closeDrawer }) {
   const menuItems = [
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Threat Center", path: "/alerts", icon: ShieldAlert },
@@ -38,21 +38,26 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       .toUpperCase();
   };
 
+  const sidebarWidth = isMobile ? "280px" : (isCollapsed ? "80px" : "280px");
+  const sidebarLeft = isMobile ? (isDrawerOpen ? "0px" : "-280px") : "0px";
+  const sidebarPosition = isMobile ? "fixed" : "sticky";
+
   return (
     <aside
       style={{
-        width: isCollapsed ? "80px" : "280px",
-        background: "rgba(3, 5, 15, 0.85)",
+        width: sidebarWidth,
+        background: "rgba(3, 5, 15, 0.92)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         borderRight: "1px solid rgba(255, 255, 255, 0.08)",
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        position: "sticky",
+        position: sidebarPosition,
+        left: sidebarLeft,
         top: 0,
-        zIndex: 100,
-        transition: "width 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        zIndex: 999,
+        transition: "width 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
     >
       {/* Brand Header */}
@@ -62,7 +67,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           display: "flex",
           alignItems: "center",
           gap: "0.75rem",
-          justifyContent: isCollapsed ? "center" : "flex-start",
+          justifyContent: (isCollapsed && !isMobile) ? "center" : "flex-start",
           borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
           height: "70px",
           position: "relative",
@@ -84,7 +89,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
         >
           <Shield size={20} />
         </div>
-        {!isCollapsed && (
+        {(!isCollapsed || isMobile) && (
           <span
             style={{
               fontFamily: "'Orbitron', sans-serif",
@@ -100,29 +105,31 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           </span>
         )}
 
-        {/* Collapse Toggle Trigger button */}
-        <button
-          onClick={toggleSidebar}
-          style={{
-            position: "absolute",
-            right: isCollapsed ? "-14px" : "-14px",
-            top: "22px",
-            width: "28px",
-            height: "28px",
-            borderRadius: "50%",
-            background: "#080c20",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            color: "#00E5FF",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
-            zIndex: 10,
-          }}
-        >
-          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-        </button>
+        {/* Collapse Toggle Trigger button (Desktop/Tablet only) */}
+        {!isMobile && (
+          <button
+            onClick={toggleSidebar}
+            style={{
+              position: "absolute",
+              right: "-14px",
+              top: "22px",
+              width: "28px",
+              height: "28px",
+              borderRadius: "50%",
+              background: "#080c20",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              color: "#00E5FF",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
+              zIndex: 10,
+            }}
+          >
+            {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        )}
       </div>
 
       {/* Navigation Links list */}
@@ -141,6 +148,11 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
             key={item.path}
             to={item.path}
             style={{ textDecoration: "none" }}
+            onClick={() => {
+              if (isMobile && closeDrawer) {
+                closeDrawer();
+              }
+            }}
           >
             {({ isActive }) => {
               const Icon = item.icon;
@@ -184,7 +196,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
                     <Icon size={18} style={{ strokeWidth: 2 }} />
                   </div>
 
-                  {!isCollapsed && (
+                  {(!isCollapsed || isMobile) && (
                     <span style={{ position: "relative", zIndex: 1 }}>{item.name}</span>
                   )}
                 </div>
@@ -207,7 +219,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
             display: "flex",
             alignItems: "center",
             gap: "0.75rem",
-            justifyContent: isCollapsed ? "center" : "flex-start",
+            justifyContent: (isCollapsed && !isMobile) ? "center" : "flex-start",
             padding: "0.5rem",
             borderRadius: "12px",
             background: "rgba(255,255,255,0.02)",

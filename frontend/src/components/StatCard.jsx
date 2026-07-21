@@ -1,5 +1,6 @@
 import Card from "./ui/Card";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import AnimatedCounter from "./ui/AnimatedCounter";
 
 function StatCard({
   title,
@@ -24,6 +25,25 @@ function StatCard({
       default:
         return "#94A3B8";
     }
+  };
+
+  const renderValue = () => {
+    if (typeof value === "number") {
+      return <AnimatedCounter value={value} />;
+    }
+    if (typeof value === "string") {
+      if (value.endsWith("%")) {
+        const num = parseFloat(value.replace("%", ""));
+        if (!isNaN(num)) {
+          return <AnimatedCounter value={num} type="percent" />;
+        }
+      }
+      const num = parseFloat(value);
+      if (!isNaN(num) && isFinite(Number(value))) {
+        return <AnimatedCounter value={num} />;
+      }
+    }
+    return value;
   };
 
   return (
@@ -80,7 +100,7 @@ function StatCard({
             textShadow: `0 0 10px rgba(0,0,0,0.5)`,
           }}
         >
-          {value}
+          {renderValue()}
         </span>
 
         {trend && (

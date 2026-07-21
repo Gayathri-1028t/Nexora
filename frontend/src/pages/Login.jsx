@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Shield, User, Lock, Eye, EyeOff, KeyRound, Cpu, Terminal } from "lucide-react";
+import { toast } from "react-toastify";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import CyberWorldBackground from "../components/ui/CyberWorldBackground";
+import PageTransition from "../components/ui/PageTransition";
 
 function Login() {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ function Login() {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      alert("Please enter Username and Password");
+      toast.error("Please enter Username and Password");
       return;
     }
 
@@ -40,20 +42,21 @@ function Login() {
       localStorage.setItem("role", response.data.role);
       localStorage.setItem("full_name", response.data.full_name);
 
-      alert("Login Successful ✅");
+      toast.success("Login Successful ✅");
       navigate("/dashboard");
     } catch (error) {
       console.log(error);
-      alert("Invalid Username or Password ❌");
+      toast.error("Invalid Username or Password ❌");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        position: "relative",
+    <PageTransition>
+      <div
+        style={{
+          position: "relative",
         height: "100vh",
         width: "100vw",
         display: "flex",
@@ -272,7 +275,8 @@ function Login() {
           </Button>
         </div>
       </Modal>
-    </div>
+      </div>
+    </PageTransition>
   );
 }
 

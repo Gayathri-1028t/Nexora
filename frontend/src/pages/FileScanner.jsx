@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Upload, ShieldCheck, FileWarning, Search, ChevronRight } from "lucide-react";
+import { toast } from "react-toastify";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
 import Input from "../components/ui/Input";
+import PageTransition from "../components/ui/PageTransition";
 
 function FileScanner() {
   const [dragActive, setDragActive] = useState(false);
@@ -23,11 +25,12 @@ function FileScanner() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    alert("Analyzing file in secure isolated sandbox... ✅");
+    toast.success("Analyzing file in secure isolated sandbox... ✅");
   };
 
   return (
-    <div style={{ padding: "2.5rem", position: "relative", zIndex: 1 }} className="container animate-fade-in">
+    <PageTransition>
+      <div style={{ padding: "2.5rem", position: "relative", zIndex: 1 }} className="container">
       <div style={{ marginBottom: "2rem" }}>
         <h1 style={{ fontSize: "1.8rem", color: "#F8FAFC", marginBottom: "0.25rem" }}>
           Sandbox File Integrity Inspector
@@ -108,7 +111,7 @@ function FileScanner() {
 
           <Button
             variant="primary"
-            onClick={() => alert(`Searching IOC records for ${hashQuery}...`)}
+            onClick={() => toast.info(`Searching IOC records for ${hashQuery.substring(0, 16)}...`)}
             disabled={!hashQuery}
           >
             Inspect Database
@@ -184,7 +187,8 @@ function FileScanner() {
           ))}
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 }
 

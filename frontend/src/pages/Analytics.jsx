@@ -5,6 +5,7 @@ import ThreatTrendChart from "../charts/ThreatTrendChart";
 import ThreatPieChart from "../charts/ThreatPieChart";
 import ThreatBarChart from "../charts/ThreatBarChart";
 import ExportCSV from "../components/ExportCSV";
+import PageTransition from "../components/ui/PageTransition";
 
 function Analytics() {
   const [alerts, setAlerts] = useState([]);
@@ -55,8 +56,9 @@ function Analytics() {
   const low = filteredAlerts.filter((a) => a.threat === "Low").length;
 
   return (
-    <div className="container">
-      <h1>📊 Security Analytics</h1>
+    <PageTransition>
+      <div className="container">
+        <h1>📊 Security Analytics</h1>
 
       {/* Search */}
       <div
@@ -210,7 +212,8 @@ function Analytics() {
 
         <p>🔍 Search, Threat Filter & Date Filter Enabled</p>
       </div>
-    </div>
+      </div>
+    </PageTransition>
   );
 }
 

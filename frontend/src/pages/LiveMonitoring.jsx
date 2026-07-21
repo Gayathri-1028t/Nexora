@@ -3,6 +3,7 @@ import { Activity, Radio, ShieldAlert, Cpu } from "lucide-react";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
+import PageTransition from "../components/ui/PageTransition";
 
 function LiveMonitoring() {
   const [trafficRate, setTrafficRate] = useState(1.4);
@@ -48,7 +49,8 @@ function LiveMonitoring() {
   }, []);
 
   return (
-    <div style={{ padding: "2.5rem", position: "relative", zIndex: 1 }} className="container animate-fade-in">
+    <PageTransition>
+      <div style={{ padding: "2.5rem", position: "relative", zIndex: 1 }} className="container">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <div>
           <h1 style={{ fontSize: "1.8rem", color: "#F8FAFC", marginBottom: "0.25rem" }}>
@@ -146,7 +148,8 @@ function LiveMonitoring() {
           ))}
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 }
 

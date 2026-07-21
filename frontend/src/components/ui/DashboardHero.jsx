@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Card from "./Card";
 import Badge from "./Badge";
+import AnimatedCounter from "./AnimatedCounter";
 
 function DashboardHero({ alertsCount = 0 }) {
   const fullName = localStorage.getItem("full_name") || "Security Operator";
@@ -219,7 +220,7 @@ function DashboardHero({ alertsCount = 0 }) {
                   textShadow: "0 0 10px rgba(0, 229, 255, 0.5)",
                 }}
               >
-                {securityScore}%
+                <AnimatedCounter value={securityScore} type="percent" />
               </div>
             </div>
 
@@ -266,7 +267,7 @@ function DashboardHero({ alertsCount = 0 }) {
           >
             <ShieldAlert size={16} style={{ color: "#FF4D6D", marginBottom: "0.25rem" }} />
             <span style={kpiLabelStyle}>TOTAL THREATS</span>
-            <span style={kpiValueStyle}>{totalThreats}</span>
+            <span style={kpiValueStyle}><AnimatedCounter value={totalThreats} /></span>
             <span style={{ fontSize: "0.65rem", color: "#FF4D6D" }}>All mitigation channels</span>
           </motion.div>
 
@@ -281,7 +282,7 @@ function DashboardHero({ alertsCount = 0 }) {
           >
             <Zap size={16} style={{ color: "#FF4D6D", marginBottom: "0.25rem" }} className={alertsCount > 0 ? "threat-pulse-high" : ""} />
             <span style={kpiLabelStyle}>CRITICAL ALERTS</span>
-            <span style={{ ...kpiValueStyle, color: alertsCount > 0 ? "#FF4D6D" : "#F8FAFC" }}>{alertsCount}</span>
+            <span style={{ ...kpiValueStyle, color: alertsCount > 0 ? "#FF4D6D" : "#F8FAFC" }}><AnimatedCounter value={alertsCount} /></span>
             <span style={{ fontSize: "0.65rem", color: alertsCount > 0 ? "#FF4D6D" : "#64748B" }}>Requires action</span>
           </motion.div>
 
@@ -292,7 +293,7 @@ function DashboardHero({ alertsCount = 0 }) {
           >
             <FileCheck size={16} style={{ color: "#00E5FF", marginBottom: "0.25rem" }} />
             <span style={kpiLabelStyle}>FILES SCANNED</span>
-            <span style={kpiValueStyle}>{filesScanned}</span>
+            <span style={kpiValueStyle}><AnimatedCounter value={filesScanned} /></span>
             <span style={{ fontSize: "0.65rem", color: "#22C55E" }}>100% integrity score</span>
           </motion.div>
 
@@ -303,7 +304,7 @@ function DashboardHero({ alertsCount = 0 }) {
           >
             <Cpu size={16} style={{ color: "#7C3AED", marginBottom: "0.25rem" }} />
             <span style={kpiLabelStyle}>AI ACCURACY</span>
-            <span style={kpiValueStyle}>{aiAccuracy}%</span>
+            <span style={kpiValueStyle}><AnimatedCounter value={aiAccuracy} type="float" />%</span>
             <span style={{ fontSize: "0.65rem", color: "#7C3AED" }}>Cognitive heuristics</span>
           </motion.div>
 
@@ -314,7 +315,7 @@ function DashboardHero({ alertsCount = 0 }) {
           >
             <Server size={16} style={{ color: "#22C55E", marginBottom: "0.25rem" }} />
             <span style={kpiLabelStyle}>DEVICES PROTECTED</span>
-            <span style={kpiValueStyle}>{devices}</span>
+            <span style={kpiValueStyle}><AnimatedCounter value={devices} /></span>
             <span style={{ fontSize: "0.65rem", color: "#64748B" }}>Active gateways</span>
           </motion.div>
 
@@ -325,7 +326,7 @@ function DashboardHero({ alertsCount = 0 }) {
           >
             <Terminal size={16} style={{ color: "#00E5FF", marginBottom: "0.25rem" }} />
             <span style={kpiLabelStyle}>ACTIVE SESSIONS</span>
-            <span style={kpiValueStyle}>{sessions}</span>
+            <span style={kpiValueStyle}><AnimatedCounter value={sessions} /></span>
             <span style={{ fontSize: "0.65rem", color: "#22C55E" }}>Secure terminals</span>
           </motion.div>
         </div>

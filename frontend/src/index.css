@@ -461,3 +461,36 @@ h1, h2, h3, h4, h5, h6, .cyber-font {
   pointer-events: none;
 }
 
+/* Skeleton Loading Pulsars */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.35; background-color: rgba(255, 255, 255, 0.04); }
+  50% { opacity: 0.7; background-color: rgba(0, 229, 255, 0.08); }
+}
+
+.skeleton-loader {
+  animation: skeleton-pulse 1.8s infinite ease-in-out;
+  border-radius: 8px;
+}
+
+/* Premium SOC Table Styles */
+.cyber-table-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.cyber-table-container th {
+  position: sticky;
+  top: 0;
+  background: rgba(8, 12, 32, 0.95) !important;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.cyber-table-row-even {
+  background-color: rgba(255, 255, 255, 0.015);
+}
+
+.cyber-table-row:hover {
+  background-color: rgba(0, 229, 255, 0.06) !important;
+}
+
